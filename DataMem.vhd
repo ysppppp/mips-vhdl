@@ -8,7 +8,8 @@ ENTITY DataMem IS
         Add:in std_logic_vector(31 downto 0);
         WrtData:in std_logic_vector(31 downto 0);
         WrtEn:in std_logic;
-		RD:out std_logic_vector(31 downto 0));
+        RD:out std_logic_vector(31 downto 0)
+        );
 END DataMem;
 
 ARCHITECTURE Behavioral of DataMem is
