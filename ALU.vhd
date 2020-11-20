@@ -23,8 +23,6 @@ end ALU;
 architecture Behavioral of ALU is
 signal a_comp:unsigned(31 downto 0);
 signal b_comp:unsigned(31 downto 0);
-signal carry:std_logic;
-signal o:std_logic_vector(31 downto 0);
 
 begin
 process
