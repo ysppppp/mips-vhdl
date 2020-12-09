@@ -4,7 +4,7 @@ entity PCreg is
     port(
         clk,clr: in std_logic;
         PCin: in std_logic_vector(31 downto 0);
-        PCout: out std_logic_vector(31 downto 0);
+        PCout: out std_logic_vector(31 downto 0)
     );
 end PCreg;
 

@@ -5,13 +5,13 @@ entity rotation is
         a: in std_logic_vector(31 downto 0);
         dir: in std_logic;
         rot_amt:in std_logic_vector(2 downto 0);
-        b: out std_logic_vector(31 downto 0);
+        b: out std_logic_vector(31 downto 0)
     );
 end rotation;
 
 architecture Behavioral of rotation is
 begin
-process
+process(a,dir,rot_amt)
 begin
     if dir = '0' then
         case rot_amt is
@@ -30,7 +30,9 @@ begin
             when "110" =>
                 b <= a(25 downto 0)&a(31 downto 26);
             when "111" =>
-                b <= a(6 downto 0)&a(31 downto 25);
+                b <= a(24 downto 0)&a(31 downto 25);
+            when others =>
+                b <= x"00000000";
         end case;
     elsif dir = '1' then
         case rot_amt is
@@ -50,6 +52,8 @@ begin
                 b <= a(5 downto 0)&a(31 downto 6);
             when "111" =>
                 b <= a(6 downto 0)&a(31 downto 7);
+             when others =>
+                b <= x"00000000";
         end case;
     end if;        
 end process;

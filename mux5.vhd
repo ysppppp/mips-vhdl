@@ -8,8 +8,8 @@ entity mux5 is
           o:out STD_LOGIC_VECTOR(4 downto 0));
 end mux5;
 
-architecture Behavioral of mux32 is
+architecture Behavioral of mux5 is
 begin
     o <= a when sel = '0' else
-         b when sel = ‘1’；
+         b when sel = '1';
 end Behavioral;

@@ -25,7 +25,7 @@ signal a_comp:unsigned(31 downto 0);
 signal b_comp:unsigned(31 downto 0);
 
 begin
-process
+process(a,b,ALUop,BLT,BEQ,BNE)
 begin
     a_comp <= unsigned(not a) + to_unsigned(1,32);
     b_comp <= unsigned(not b) + to_unsigned(1,32);
@@ -37,12 +37,12 @@ begin
     elsif ALUop = "011" then
         res <= a NOR b;
     elsif ALUop = "100" then
-        res <= unsigned(a)+unsigned(b);
+        res <= std_logic_vector(unsigned(a)+unsigned(b));
     -- elsif ALUop = "101" then
     elsif ALUop = "110" then
         res <= a XOR b;
     elsif ALUop = "111" then-- sub
-        res <= signed(a) - signed(b);
+        res <= std_logic_vector(signed(a) - signed(b));
     else
         res <= (others => 'X');
     end if;
@@ -53,6 +53,8 @@ begin
         zero <= '1';
     elsif BNE = '1' and signed(a) /= signed(b) then
         zero <= '1';
+    else
+        zero <= '0';
     end if;
 end process;
 end Behavioral;
