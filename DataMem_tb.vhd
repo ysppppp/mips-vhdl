@@ -36,14 +36,14 @@ entity DataMem_tb is
 end DataMem_tb;
 
 architecture Behavioral of DataMem_tb is
-signal clk:std_logic:= '0';
+signal clk:std_logic:='0';
 signal Add:std_logic_vector(31 downto 0);
 signal WrtData:std_logic_vector(31 downto 0);
 signal WrtEn:std_logic;
 signal RD:std_logic_vector(31 downto 0);
 component DataMem
-	port (
-        clk:in std_logic;  
+	port ( 
+	    clk:std_logic;
         Add:in std_logic_vector(31 downto 0);
         WrtData:in std_logic_vector(31 downto 0);
         WrtEn:in std_logic;
@@ -52,11 +52,12 @@ component DataMem
 end component;
 begin
 UUT: DataMem port map(clk,Add,WrtData,WrtEn,RD);
-clockgen: process
+clockgen:process
 begin
-    wait for 5ns;
-    clk <= not clk;
+wait for 5ns;
+clk <= not clk;
 end process;
+
 test:process
 begin
     Add <= x"00000000";
@@ -70,11 +71,11 @@ begin
     wait for 10ns;
     assert(RD = x"aef34ced") report"read data error" severity error;
     
-    Add <= x"00000004";
+    Add <= x"00000001";
     WrtData <= x"ff11ff11";
     WrtEn <= '0';
     wait for 10ns;
-    assert(RD = x"aec32b77") report"read data error" severity error;
+    assert(RD = x"00000002") report"read data error" severity error;
 finish;
 end process;
 end Behavioral;

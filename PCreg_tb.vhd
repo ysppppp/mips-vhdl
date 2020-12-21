@@ -37,17 +37,19 @@ end PCreg_tb;
 
 architecture Behavioral of PCreg_tb is
 signal clr,clk:std_logic:= '0';
+signal done:std_logic:='1';
 signal PCin,PCout:std_logic_vector(31 downto 0);
 constant CLK_PERIOD: Time := 10ns;
 component PCreg
     port(
+        done: in std_logic;
         clk,clr: in std_logic;
         PCin: in std_logic_vector(31 downto 0);
         PCout: out std_logic_vector(31 downto 0)
     );
 end component;
 begin
-UUT: PCreg port map(clk, clr, PCin, PCout);
+UUT: PCreg port map(done,clk, clr, PCin, PCout);
 gen_clock: process
 begin
     wait for(CLK_PERIOD/2);
@@ -64,9 +66,15 @@ begin
     wait for CLK_PERIOD;
     assert(PCout = x"6aecb0c2") report "sth. failed1" severity error;
     
+    done <= '0';
     PCin <= x"c4b8decf";
     wait for CLK_PERIOD;
-    assert(PCout = x"c4b8decf") report "sth. failed1" severity error;
+    done <= '1';
+    assert(PCout = x"6aecb0c2") report "sth. failed1" severity error;
+    
+    PCin <= x"af8ec302";
+    wait for CLK_PERIOD;
+    assert(PCout = x"af8ec302") report "sth. failed1" severity error;
     
     clr <= '1';
     wait for CLK_PERIOD;

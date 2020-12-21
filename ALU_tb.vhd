@@ -36,6 +36,8 @@ entity ALU_tb is
 end ALU_tb;
 
 architecture Behavioral of ALU_tb is
+signal div_done:std_logic;
+signal done:std_logic;
 signal BLT,BEQ,BNE:std_logic;
 signal ALUop:std_logic_vector(2 downto 0);
 signal a,b:std_logic_vector(31 downto 0);
@@ -44,16 +46,18 @@ signal zero:std_logic:='0';
 signal x:std_logic_vector(31 downto 0):=(others => 'X');
 component ALU
     port(
+        div_done: in std_logic; -- if division is done
         BLT,BEQ,BNE:in std_logic; -- branch type
         ALUop: in std_logic_vector(2 downto 0);
         a,b: in std_logic_vector(31 downto 0);
         -- u: in std_logic; -- unsgined
         res: out std_logic_vector(31 downto 0);
-        zero: out std_logic:='0' -- branch take or not
+        zero: out std_logic:='0'; -- branch take or not
+        done: out std_logic
     );
 end component;
 begin
-UUT: ALU port map(BLT,BEQ,BNE,ALUop,a,b,res,zero);
+UUT: ALU port map(div_done,BLT,BEQ,BNE,ALUop,a,b,res,zero,done);
 
 test: process
 begin
@@ -129,6 +133,12 @@ begin
     b <= x"fffffffc";
     wait for 10 ns;
     assert(res = x) report "add failed" severity error;
+    
+    ALUop <= "101";
+    div_done <= '0';
+    wait for 2ns;
+    div_done <='1';
+    wait for 8 ns; 
 finish;
 end process;
 end Behavioral;

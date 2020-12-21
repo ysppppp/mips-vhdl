@@ -11,14 +11,20 @@ entity Decoder is
         dir:out std_logic:='0';--rotation direction;
         BLT,BEQ,BNE:out std_logic:= '0'; --branch type indicator
         halt:out std_logic:='0'; --halt
-        J:out std_logic:='0' --jump
+        J:out std_logic:='0'; --jump
+        --for division block
+        div_start:out std_logic;
+        div_rst:out std_logic;
+        div_alu:out std_logic
+        
     );
 end Decoder;
 architecture Behavioral of Decoder is
-
+signal delayed_done:std_logic;
 begin
 process(op,funct)
 begin
+    --delayed_done <= transport div_done after 2 ns;
     MemtoReg <= '0';
     WrtMem <= '0';
     Branch <= '0';
@@ -34,6 +40,10 @@ begin
     BNE <= '0';
     halt <= '0';
     J <= '0';
+    -- for division unit
+    div_start <= '0';
+    div_rst <= '1';
+    div_alu <= '1'; -- default is to select the outut from alu
     if op = "000000" then
         MemtoReg <= '0';--select alu result to write
         ALUsrc <= '0';--Rt is the second operand
@@ -50,8 +60,11 @@ begin
                 ALUop <= "100"; -- ADD
             When "100001" => 
                 ALUop <= "100"; -- ADDU
-            when "101010" => 
-                ALUop <= "101"; -- DIVU
+            when "011010" => -- DIVU
+                div_start <= '1';
+                div_rst <= '0';
+                div_alu <= '0'; -- select the outut from division unit 
+                ALUop <= "101";
             when "010000" => 
                 ALUop <= "110"; -- XRLR xor
                 resR <= '1';
@@ -91,16 +104,22 @@ begin
                 WrtMem <= '1';
             when "001001" => --BLT
                 ALUop <= "000"; -- ALU nop
+                ALUsrc <= '0';
                 Branch <= '1';
                 BLT <= '1';
             when "001010" => -- BEQ
                 ALUop <= "000"; -- ALU nop
+                ALUsrc <= '0';
                 Branch <= '1';
                 BEQ <= '1';
             when "001011" => --BNE
                 ALUop <= "000"; -- ALU nop
+                ALUsrc <= '0';
                 Branch <= '1';
                 BNE <= '1';
+            when "001000" => --ADDI
+                ALUop <= "100";
+                WrtReg <= '1';
             when others =>
                 ALUop <= "000";
         end case;
@@ -114,5 +133,8 @@ begin
                 ALUop <= "000";
         end case;
     end if;
+--    if delayed_done = '1' then
+--        ALUop <= "000";
+--    end if;
 end process;
 end Behavioral;

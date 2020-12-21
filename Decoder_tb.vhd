@@ -45,6 +45,9 @@ signal  BLT,BEQ,BNE:std_logic:= '0'; --branch type indicator
 signal  halt:std_logic:='0'; --halt
 signal  J:std_logic:='0'; --jump
 
+signal start:std_logic;
+signal rst:std_logic;
+signal div_alu:std_logic;
 component Decoder is
     port(
         op:in std_logic_vector(5 downto 0);
@@ -55,11 +58,14 @@ component Decoder is
         dir:out std_logic:='0';--rotation direction;
         BLT,BEQ,BNE:out std_logic:= '0'; --branch type indicator
         halt:out std_logic:='0'; --halt
-        J:out std_logic:='0' --jump
+        J:out std_logic:='0';--jump
+        div_start:out std_logic;
+        div_rst:out std_logic;
+        div_alu:out std_logic 
     );
 end component;
 begin
-UUT: Decoder port map(op,funct,MemtoReg,WrtMem,Branch,ALUsrc,RegDst,WrtReg,ALUop,opR,resR,dir,BLT,BEQ,BNE,halt,J);
+UUT: Decoder port map(op,funct,MemtoReg,WrtMem,Branch,ALUsrc,RegDst,WrtReg,ALUop,opR,resR,dir,BLT,BEQ,BNE,halt,J,start,rst,div_alu);
 test:process
 begin
     --and
@@ -119,6 +125,16 @@ begin
      --j
     op <= "001100";
     funct <= "010000";
+    wait for 10ns;
+    
+    --divu
+    op <= "000000";
+    funct <= "101010";
+    wait for 10ns;
+    
+    --divu
+    op <= "000000";
+    funct <= "101010";
     wait for 10ns;
     
 finish;

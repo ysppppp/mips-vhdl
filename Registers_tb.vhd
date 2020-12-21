@@ -41,9 +41,11 @@ signal Rs,Rt,Rd:std_logic_vector(4 downto 0);
 signal data:std_logic_vector(31 downto 0);
 signal WrtReg:std_logic;
 signal RD1,RD2:std_logic_vector(31 downto 0);
+signal done:std_logic;
 component Registers 
 	port (
-        clk:in std_logic;
+	    clk:in std_logic;
+	    done:std_logic;
 		Rs:in std_logic_vector(4 downto 0);
 		Rt:in std_logic_vector(4 downto 0);
 		Rd:in std_logic_vector(4 downto 0);
@@ -54,11 +56,11 @@ component Registers
         );
 end component;
 begin
-UUT: Registers port map(clk,Rs,Rt,Rd,data,WrtReg,RD1,RD2);
-clockgen:process
+UUT: Registers port map(clk,done,Rs,Rt,Rd,data,WrtReg,RD1,RD2);
+clockgen: process
 begin
-    wait for 5ns;
-    clk <= not clk;
+wait for 5ns;
+clk <= not clk;
 end process;
 
 test:process
@@ -67,6 +69,7 @@ begin
     Rt <= "00000";
     Rd <= "00001";
     data <= x"ffffffff";
+    done <= '1';
     WrtReg <= '1';
     wait for 10ns;
     
@@ -75,6 +78,7 @@ begin
     Rd <= "00010";
     data <= x"10101010";
     WrtReg <= '1';
+    done <= '0';
     wait for 10ns;
     
     Rs <= "00001";
@@ -83,7 +87,7 @@ begin
     data <= x"11111111";
     WrtReg <= '0';
     wait for 10ns;
-    assert(RD1 = x"ffffffff" and RD2 = x"10101010") report"read data error" severity error;
+    assert(RD1 = x"ffffffff" and RD2 = x"00000000") report"read data error" severity error;
 finish;
 end process;
 
